@@ -1,9 +1,10 @@
 version: 2.0
 jobs:
   build:
-    machine: true
+    docker:
+      - image: buildpack-deps:trusty
     steps:
       - checkout
-      - run: docker build -t eu.gcr.io/cosmic-surface-250108/webapp:2.1 .
+      - run: docker build -t eu.gcr.io/cosmic-surface-250108/webapp:2.2 .
       - run: echo ${token}| docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
-      - run: docker push eu.gcr.io/cosmic-surface-250108/webapp:2.1
+      - run: docker push eu.gcr.io/cosmic-surface-250108/webapp:2.2
