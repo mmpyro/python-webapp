@@ -2,9 +2,21 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: buildpack-deps:trusty
+      - image: golang:1.6.4-jessie
     steps:
       - checkout
-      - run: docker build -t eu.gcr.io/cosmic-surface-250108/webapp:2.2 .
-      - run: echo ${token}| docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
-      - run: docker push eu.gcr.io/cosmic-surface-250108/webapp:2.2
+      - run:
+          name: Install Docker client
+          command: |
+            set -x
+            VER="17.03.0-ce"
+            curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+      - run:
+          name: build and push docker image
+          command: |
+            TAG=0.1.$CIRCLE_BUILD_NUM
+            docker build -t eu.gcr.io/cosmic-surface-250108/webapp:$TAG .
+            echo ${token}| docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
+            docker push eu.gcr.io/cosmic-surface-250108/webapp:$TAG
